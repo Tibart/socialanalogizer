@@ -38,7 +38,7 @@ func main() {
 			fmt.Println()
 			//tstKeys := []string{"test d"}
 
-			s := "developer"
+			s := "Ipsum"
 			expr := fmt.Sprintf(`(?i)\b%s\b`, s)
 			re, _ := regexp.Compile(expr)
 
