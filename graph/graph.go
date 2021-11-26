@@ -20,14 +20,14 @@ type Vertex struct {
 }
 
 // AddVertex add a new Vertex to the Graph
-func (g *Graph) AddVertex(k string) error {
+func (g *Graph) AddVertex(key string) error {
 	// Check if Vertex already exists
-	if g.exists(k) {
-		return fmt.Errorf(errVertexNotExists, k)
+	if g.exists(key) {
+		return fmt.Errorf(errVertexNotExists, key)
 	}
 
 	// Add Vertex to Graph
-	g.vertices = append(g.vertices, &Vertex{k, nil})
+	g.vertices = append(g.vertices, &Vertex{key, nil})
 
 	return nil
 }
@@ -54,14 +54,14 @@ func (g *Graph) AddEdge(from, to string) error {
 }
 
 // getVertex returns the vertex coresponding to the key if exists.
-func (g *Graph) getVertex(k string) (*Vertex, error) {
+func (g *Graph) getVertex(key string) (*Vertex, error) {
 	for _, v := range g.vertices {
-		if v.key == k {
+		if v.key == key {
 			return v, nil
 		}
 	}
 
-	return nil, fmt.Errorf(errVertexNotExists, k)
+	return nil, fmt.Errorf(errVertexNotExists, key)
 }
 
 // exists checks if a vertex already exists in graph vertices
