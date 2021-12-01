@@ -1,9 +1,12 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/Tibart/socialanalogizer/graph"
@@ -48,27 +51,22 @@ func main() {
 		for _, v := range nv {
 			// Exclude new vertex
 			if strings.TrimSuffix(f.Name(), suffix) != v {
-				//doc, _ := ioutil.ReadFile(path.Join(folder, f.Name()))
-				// Open vertex file
-				file, _ := os.Open(path.Join(folder, f.Name()))
-				stats, _ := file.Stat()
-				defer file.Close()
+				// Read vertex document
+				vd, err := ioutil.ReadFile(path.Join(folder, f.Name()))
+				if err != nil {
+					errors.New(err.Error())
+				}
 
-				// Read vertex doc
-				vd := make([]byte, stats.Size())
-				l, _ := file.Read(vd)
+				// Find replace occurrences of vertex key with hyperlink
+				expr := fmt.Sprintf(`(?i)\b%s\b`, v)
+				re, _ := regexp.Compile(expr)
+				tmpl := []byte("*****> $0 <*****")
+				result := re.ReplaceAll(vd, tmpl)
 
-				file.Write()
-
-				// expr := fmt.Sprintf(`(?i)\b%s\b`, v)
-				// re, _ := regexp.Compile(expr)
-				// repl := []byte("*****> $0 <*****")
-				// result := re.ReplaceAll(doc, repl)
-
-				// fmt.Println(string(result))
-
+				if err := os.WriteFile(path.Join(folder, f.Name()), result, 0644); err != nil {
+					fmt.Errorf("could not write to file: %s", err.Error())
+				}
 			}
-
 		}
 	}
 
