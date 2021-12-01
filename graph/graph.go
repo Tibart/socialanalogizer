@@ -22,7 +22,7 @@ type Vertex struct {
 // AddVertex add a new Vertex to the Graph
 func (g *Graph) AddVertex(key string) error {
 	// Check if Vertex already exists
-	if g.exists(key) {
+	if g.Containes(key) {
 		return fmt.Errorf(errVertexNotExists, key)
 	}
 
@@ -53,6 +53,17 @@ func (g *Graph) AddEdge(from, to string) error {
 	return nil
 }
 
+// exists checks if a vertex already exists in graph vertices
+func (g *Graph) Containes(key string) bool {
+	for _, v := range g.vertices {
+		if v.key == key {
+			return true
+		}
+	}
+
+	return false
+}
+
 // getVertex returns the vertex coresponding to the key if exists.
 func (g *Graph) getVertex(key string) (*Vertex, error) {
 	for _, v := range g.vertices {
@@ -62,15 +73,4 @@ func (g *Graph) getVertex(key string) (*Vertex, error) {
 	}
 
 	return nil, fmt.Errorf(errVertexNotExists, key)
-}
-
-// exists checks if a vertex already exists in graph vertices
-func (g *Graph) exists(key string) bool {
-	for _, v := range g.vertices {
-		if v.key == key {
-			return true
-		}
-	}
-
-	return false
 }
