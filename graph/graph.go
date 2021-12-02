@@ -1,11 +1,12 @@
 package graph
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
 const (
-	errVertexNotExists = "vertex with the key '%v' already exists"
+	errVertexExists = "vertex with the key '%v' already exists"
 )
 
 // Graph is the top level struct for storing the graph data
@@ -23,7 +24,7 @@ type Vertex struct {
 func (g *Graph) AddVertex(key string) error {
 	// Check if Vertex already exists
 	if g.Containes(key) {
-		return fmt.Errorf(errVertexNotExists, key)
+		return fmt.Errorf(errVertexExists, key)
 	}
 
 	// Add Vertex to Graph
@@ -42,7 +43,7 @@ func (g *Graph) AddEdge(from, to string) error {
 	}
 
 	// Get to vertex
-	tv, err := g.getVertex(from)
+	tv, err := g.getVertex(to)
 	if err != nil {
 		return err
 	}
@@ -72,5 +73,10 @@ func (g *Graph) getVertex(key string) (*Vertex, error) {
 		}
 	}
 
-	return nil, fmt.Errorf(errVertexNotExists, key)
+	return nil, fmt.Errorf(errVertexExists, key)
+}
+
+func (g *Graph) String() string {
+	j, _ := json.MarshalIndent(*g, "", "\t")
+	return string(j)
 }
