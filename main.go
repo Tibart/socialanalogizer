@@ -69,7 +69,7 @@ func main() {
 				}
 
 				// Replace occurrences with template
-				tmpl := []byte("*****> $key <*****")
+				tmpl := []byte("[$key](./$key.md)")
 				result := re.ReplaceAll(vd, tmpl)
 
 				// TODO: use open file instead of reopening file every time
@@ -82,5 +82,5 @@ func main() {
 	}
 
 	// Print graph
-	fmt.Println(g.String())
+	g.Print()
 }

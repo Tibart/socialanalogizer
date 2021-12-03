@@ -1,7 +1,6 @@
 package graph
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
@@ -11,13 +10,13 @@ const (
 
 // Graph is the top level struct for storing the graph data
 type Graph struct {
-	vertices []*Vertex
+	Vertices []*Vertex
 }
 
 // Vertex reassembles the object that has relations
 type Vertex struct {
-	key      string
-	adjacent []*Vertex
+	Key      string
+	Adjacent []*Vertex
 }
 
 // AddVertex add a new Vertex to the Graph
@@ -28,7 +27,7 @@ func (g *Graph) AddVertex(key string) error {
 	}
 
 	// Add Vertex to Graph
-	g.vertices = append(g.vertices, &Vertex{key, nil})
+	g.Vertices = append(g.Vertices, &Vertex{key, nil})
 
 	return nil
 }
@@ -49,15 +48,15 @@ func (g *Graph) AddEdge(from, to string) error {
 	}
 
 	// Add to vertex to from vertex
-	fv.adjacent = append(fv.adjacent, tv)
+	fv.Adjacent = append(fv.Adjacent, tv)
 
 	return nil
 }
 
-// exists checks if a vertex already exists in graph vertices
+// exists checks if a vertex already exists in graph Vertices
 func (g *Graph) Containes(key string) bool {
-	for _, v := range g.vertices {
-		if v.key == key {
+	for _, v := range g.Vertices {
+		if v.Key == key {
 			return true
 		}
 	}
@@ -67,8 +66,8 @@ func (g *Graph) Containes(key string) bool {
 
 // getVertex returns the vertex coresponding to the key if exists.
 func (g *Graph) getVertex(key string) (*Vertex, error) {
-	for _, v := range g.vertices {
-		if v.key == key {
+	for _, v := range g.Vertices {
+		if v.Key == key {
 			return v, nil
 		}
 	}
@@ -76,7 +75,12 @@ func (g *Graph) getVertex(key string) (*Vertex, error) {
 	return nil, fmt.Errorf(errVertexExists, key)
 }
 
-func (g *Graph) String() string {
-	j, _ := json.MarshalIndent(*g, "", "\t")
-	return string(j)
+func (g *Graph) Print() {
+	for _, v := range g.Vertices {
+		fmt.Printf("Vertex '%v' :", v.Key)
+		for _, v := range v.Adjacent {
+			fmt.Printf(" %v", v.Key)
+		}
+		fmt.Println()
+	}
 }
