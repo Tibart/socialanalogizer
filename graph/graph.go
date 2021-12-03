@@ -10,13 +10,13 @@ const (
 
 // Graph is the top level struct for storing the graph data
 type Graph struct {
-	Vertices []*Vertex
+	vertices []*Vertex
 }
 
 // Vertex reassembles the object that has relations
 type Vertex struct {
-	Key      string
-	Adjacent []*Vertex
+	key      string
+	adjacent []*Vertex
 }
 
 // AddVertex add a new Vertex to the Graph
@@ -27,7 +27,7 @@ func (g *Graph) AddVertex(key string) error {
 	}
 
 	// Add Vertex to Graph
-	g.Vertices = append(g.Vertices, &Vertex{key, nil})
+	g.vertices = append(g.vertices, &Vertex{key, nil})
 
 	return nil
 }
@@ -48,15 +48,15 @@ func (g *Graph) AddEdge(from, to string) error {
 	}
 
 	// Add to vertex to from vertex
-	fv.Adjacent = append(fv.Adjacent, tv)
+	fv.adjacent = append(fv.adjacent, tv)
 
 	return nil
 }
 
-// exists checks if a vertex already exists in graph Vertices
+// exists checks if a vertex already exists in graph vertices
 func (g *Graph) Containes(key string) bool {
-	for _, v := range g.Vertices {
-		if v.Key == key {
+	for _, v := range g.vertices {
+		if v.key == key {
 			return true
 		}
 	}
@@ -66,8 +66,8 @@ func (g *Graph) Containes(key string) bool {
 
 // getVertex returns the vertex coresponding to the key if exists.
 func (g *Graph) getVertex(key string) (*Vertex, error) {
-	for _, v := range g.Vertices {
-		if v.Key == key {
+	for _, v := range g.vertices {
+		if v.key == key {
 			return v, nil
 		}
 	}
@@ -76,10 +76,10 @@ func (g *Graph) getVertex(key string) (*Vertex, error) {
 }
 
 func (g *Graph) Print() {
-	for _, v := range g.Vertices {
-		fmt.Printf("Vertex '%v' :", v.Key)
-		for _, v := range v.Adjacent {
-			fmt.Printf(" %v", v.Key)
+	for _, v := range g.vertices {
+		fmt.Printf("Vertex '%v' :", v.key)
+		for _, v := range v.adjacent {
+			fmt.Printf(" %v", v.key)
 		}
 		fmt.Println()
 	}
