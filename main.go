@@ -56,7 +56,7 @@ func main() {
 			}
 
 			// Find occurrences of vertex key
-			expr := fmt.Sprintf(`(?i)(?P<key>\b%s\b)`, fv)
+			expr := fmt.Sprintf(`(?i)(?P<key>(?:\[)?\b%s\b(?:\.md\))?)`, fv)
 			re, err := regexp.Compile(expr)
 			if err != nil {
 				log.Fatalf("could not compile regexp: %s", err)
@@ -68,9 +68,15 @@ func main() {
 					log.Fatalf("could not add edge: %s", err)
 				}
 
-				// Replace occurrences with template
-				tmpl := []byte("[$key](./$key.md)")
-				result := re.ReplaceAll(vd, tmpl)
+				// Replace occurrences in document
+				result := re.ReplaceAllFunc(vd, func(s []byte) []byte {
+					// Exclude already markdown hyperlinked references
+					if string(s[0]) == "[" || string(s[len(s)-1]) == `)` {
+						return s
+					}
+					// Replace occurrences keyword with markdown hyperlink
+					return []byte(fmt.Sprintf(`[%[1]s](./%[1]s.md)`, s))
+				})
 
 				// TODO: use open file instead of reopening file every time
 				// Write result back to file
