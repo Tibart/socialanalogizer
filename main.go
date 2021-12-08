@@ -1,21 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
-	"path"
-	"regexp"
 	"strings"
 
+	"github.com/Tibart/socialanalogizer/analogizer"
 	"github.com/Tibart/socialanalogizer/graph"
 )
 
 func main() {
 
 	// Create graph instance
-	g := graph.Graph{}
+	var g *graph.Graph
+	g = new(graph.Graph)
 
 	// Get new vertices, add them to graph and return new vertices
 	folder := "./data"
@@ -24,67 +22,25 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not read directory: %s", err)
 	}
-
-	nv := []string{}
+	allVertices := []string{}
+	newVertices := []string{}
 	for _, f := range files {
 		if strings.HasSuffix(f.Name(), suffix) {
-			v := strings.TrimSuffix(f.Name(), suffix)
-			if !g.Containes(v) {
-				if err := g.AddVertex(v); err != nil {
+			vertex := strings.TrimSuffix(f.Name(), suffix)
+			allVertices = append(allVertices, vertex)
+			if !g.Containes(vertex) {
+				if err := g.AddVertex(vertex); err != nil {
 					log.Fatalf("could not add vertex: %s", err)
 				} else {
-					nv = append(nv, v)
+					newVertices = append(newVertices, vertex)
 				}
 			}
 		}
 	}
 
 	// Add reference to new vertex in existing vertices documents
-	for _, f := range files {
-		tv := strings.TrimSuffix(f.Name(), suffix)
-		for _, fv := range nv {
-			// Exclude new vertex files
-			if tv == fv {
-				continue
-			}
-
-			// TODO: replace by open file
-			// Read existing vertex document
-			vd, err := ioutil.ReadFile(path.Join(folder, f.Name()))
-			if err != nil {
-				log.Fatalf("could not read file: %s", err)
-			}
-
-			// Find occurrences of vertex key
-			expr := fmt.Sprintf(`(?i)(?P<key>(?:\[)?\b%s\b(?:\.md\))?)`, fv)
-			re, err := regexp.Compile(expr)
-			if err != nil {
-				log.Fatalf("could not compile regexp: %s", err)
-			}
-
-			if re.Match(vd) {
-				// Add edge to graph when match is present
-				if err := g.AddEdge(fv, tv); err != nil {
-					log.Fatalf("could not add edge: %s", err)
-				}
-
-				// Replace occurrences in document
-				result := re.ReplaceAllFunc(vd, func(s []byte) []byte {
-					// Exclude already markdown hyperlinked references
-					if string(s[0]) == "[" || string(s[len(s)-1]) == `)` {
-						return s
-					}
-					// Replace occurrences keyword with markdown hyperlink
-					return []byte(fmt.Sprintf(`[%[1]s](./%[1]s.md)`, s))
-				})
-
-				// TODO: use open file instead of reopening file every time
-				// Write result back to file
-				if err := os.WriteFile(path.Join(folder, f.Name()), result, 0644); err != nil {
-					log.Fatalf("could not write to file: %s", err)
-				}
-			}
-		}
+	if err := analogizer.Analogize(allVertices, newVertices, g, folder, suffix); err != nil {
+		log.Fatalln(err.Error())
 	}
 
 	// Print graph
