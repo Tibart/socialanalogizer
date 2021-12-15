@@ -3,6 +3,8 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"os"
+	"path"
 	"strings"
 
 	"github.com/Tibart/socialanalogizer/analogizer"
@@ -12,8 +14,7 @@ import (
 func main() {
 
 	// Create graph instance
-	var g *graph.Graph
-	g = new(graph.Graph)
+	var g *graph.Graph = new(graph.Graph)
 
 	// Get new vertices, add them to graph and return new vertices
 	folder := "./data"
@@ -38,9 +39,26 @@ func main() {
 		}
 	}
 
-	// Add reference to new vertex in existing vertices documents
-	if err := analogizer.Analogize(allVertices, newVertices, g, folder, suffix); err != nil {
-		log.Fatalln(err.Error())
+	// Iterare over files
+	for _, vertex := range allVertices {
+		// Open file`
+		doc, err := os.OpenFile(path.Join(folder, vertex+suffix), os.O_RDWR, 0644)
+		if err != nil {
+			panic(err)
+		}
+		defer doc.Close()
+
+		// Amend new verteces
+		b, err := analogizer.Amend(newVertices, vertex, doc, g)
+		if err != nil {
+			panic(err)
+		}
+
+		// TODO: only write when changed
+		// Write amended document
+		if _, err := doc.WriteAt(b, 0); err != nil {
+			panic(err)
+		}
 	}
 
 	// Print graph

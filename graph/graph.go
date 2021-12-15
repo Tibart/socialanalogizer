@@ -84,3 +84,5 @@ func (g *Graph) Print() {
 		fmt.Println()
 	}
 }
+
+// TODO: Export Json consiting of nodes and edges
