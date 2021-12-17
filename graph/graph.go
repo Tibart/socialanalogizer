@@ -33,8 +33,7 @@ func (g *Graph) AddVertex(key string) error {
 }
 
 // AddEdge
-func (g *Graph) AddEdge(from, to string) error {
-	// TODO: Figure out if vertex can be made if nit exists
+func (g *Graph) AddEdge(from, to string, biDirectional bool) error {
 	// Get from vertex
 	fv, err := g.getVertex(from)
 	if err != nil {
@@ -47,8 +46,13 @@ func (g *Graph) AddEdge(from, to string) error {
 		return err
 	}
 
-	// Add to vertex to from vertex
-	fv.adjacent = append(fv.adjacent, tv)
+	// Add edge to adjacents
+	if !fv.Containes(tv.key) {
+		fv.adjacent = append(fv.adjacent, tv)
+	}
+	if biDirectional && !tv.Containes(fv.key) {
+		tv.adjacent = append(tv.adjacent, fv)
+	}
 
 	return nil
 }
@@ -60,8 +64,34 @@ func (g *Graph) Containes(key string) bool {
 			return true
 		}
 	}
-
 	return false
+}
+
+func (v *Vertex) Containes(key string) bool {
+	for _, e := range v.adjacent {
+		if e.key == key {
+			return true
+		}
+	}
+	return false
+}
+
+func (g *Graph) GetVerticesKeys() []string {
+	k := []string{}
+	for _, v := range g.vertices {
+		k = append(k, v.key)
+	}
+	return k
+}
+
+func (g *Graph) Print() {
+	for _, v := range g.vertices {
+		fmt.Printf("Vertex '%v' :", v.key)
+		for _, v := range v.adjacent {
+			fmt.Printf(" %v", v.key)
+		}
+		fmt.Println()
+	}
 }
 
 // getVertex returns the vertex coresponding to the key if exists.
@@ -73,16 +103,6 @@ func (g *Graph) getVertex(key string) (*Vertex, error) {
 	}
 
 	return nil, fmt.Errorf(errVertexExists, key)
-}
-
-func (g *Graph) Print() {
-	for _, v := range g.vertices {
-		fmt.Printf("Vertex '%v' :", v.key)
-		for _, v := range v.adjacent {
-			fmt.Printf(" %v", v.key)
-		}
-		fmt.Println()
-	}
 }
 
 // TODO: Export Json consiting of nodes and edges
