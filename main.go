@@ -13,7 +13,7 @@ import (
 
 func main() {
 
-	// Collect all vertices
+	// Collect all vertices and correcpomding markdown documents
 	folder := "./data"
 	suffix := ".md"
 	files, err := ioutil.ReadDir(folder)
@@ -32,12 +32,9 @@ func main() {
 	var g *graph.Graph = new(graph.Graph)
 
 	// Create Analogizer instance
-	a, _ := analogizer.NewAnalogizer(g)
+	a, _ := analogizer.NewAnalogizer(g, allVertices)
 
-	// Update graph nodes
-	a.Restate(allVertices)
-
-	// Iterare over files
+	// Update vertex adjacents and amend corresponding markdown document
 	for _, vertex := range allVertices {
 		// Open file`
 		doc, err := os.OpenFile(path.Join(folder, vertex+suffix), os.O_RDWR, 0644)

@@ -15,15 +15,20 @@ type Analogizer struct {
 	grh *graph.Graph
 }
 
-func NewAnalogizer(g *graph.Graph) (Analogizer, error) {
+func NewAnalogizer(graph *graph.Graph, vertices []string) (Analogizer, error) {
 	a := &Analogizer{}
-	a.grh = g
+	a.grh = graph
+
+	// Restate all vertices
+	if _, err := a.restate(vertices); err != nil {
+		return Analogizer{}, err
+	}
 
 	return *a, nil
 }
 
 // Restate adds vertices to the graph and returns the nummer of new vertices
-func (a *Analogizer) Restate(vertices []string) (int, error) {
+func (a *Analogizer) restate(vertices []string) (int, error) {
 	c := 0
 	for _, v := range vertices {
 		if !a.grh.Containes(v) {
