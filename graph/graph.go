@@ -19,6 +19,8 @@ type Vertex struct {
 	adjacent []*Vertex
 }
 
+// TODO implement export interface of struct's
+
 // AddVertex add a new Vertex to the Graph
 func (g *Graph) AddVertex(key string) error {
 	// Check if Vertex already exists
@@ -84,14 +86,35 @@ func (g *Graph) GetVerticesKeys() []string {
 	return k
 }
 
-func (g *Graph) Print() {
-	for _, v := range g.vertices {
-		fmt.Printf("Vertex '%v' :", v.key)
-		for _, v := range v.adjacent {
-			fmt.Printf(" %v", v.key)
-		}
-		fmt.Println()
+// Export graph database as nodes and edges
+func (g *Graph) Export() interface{} {
+	type node struct {
+		Id    string `json:"id"`
+		Label string `json:"label"`
 	}
+	nd := []node{}
+	type edge struct {
+		From string `json:"from"`
+		To   string `json:"to"`
+	}
+	ed := []edge{}
+
+	// Add data to struct's
+	for _, v := range g.vertices {
+		nd = append(nd, node{v.key, v.key})
+		for _, a := range v.adjacent {
+			ed = append(ed, edge{v.key, a.key})
+		}
+	}
+
+	//
+	type data struct {
+		Nodes []node `json:"nodes"`
+		Edges []edge `json:"edges"`
+	}
+	e := data{nd, ed}
+
+	return e
 }
 
 // getVertex returns the vertex coresponding to the key if exists.
@@ -104,5 +127,3 @@ func (g *Graph) getVertex(key string) (*Vertex, error) {
 
 	return nil, fmt.Errorf(errVertexExists, key)
 }
-
-// TODO: Export Json consiting of nodes and edges

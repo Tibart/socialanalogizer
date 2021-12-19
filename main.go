@@ -56,5 +56,6 @@ func main() {
 	}
 
 	// Print graph
-	g.Print()
+	a.Print()
+
 }

@@ -1,6 +1,7 @@
 package analogizer
 
 import (
+	"encoding/json"
 	"fmt"
 	"html"
 	"io"
@@ -98,4 +99,9 @@ func (a *Analogizer) Amend(key string, r io.Reader) ([]byte, error) {
 	}
 
 	return doc, nil
+}
+
+func (a *Analogizer) Print() {
+	j, _ := json.MarshalIndent(a.grh.Export(), "", "   ")
+	fmt.Println(string(j))
 }
