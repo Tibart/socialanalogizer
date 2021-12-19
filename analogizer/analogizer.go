@@ -2,9 +2,11 @@ package analogizer
 
 import (
 	"fmt"
+	"html"
 	"io"
 	"io/ioutil"
 	"regexp"
+	"strings"
 
 	"github.com/Tibart/socialanalogizer/graph"
 )
@@ -79,7 +81,8 @@ func (a *Analogizer) Amend(key string, r io.Reader) ([]byte, error) {
 				}
 
 				// Replace occurrences keyword with markdown hyperlink
-				return []byte(fmt.Sprintf(`[%[1]s](./%[1]s.md)`, s))
+				hl := html.EscapeString(strings.ReplaceAll(string(s), " ", "%20"))
+				return []byte(fmt.Sprintf(`[%[1]s](./%[2]s.md)`, s, hl))
 			})
 		}
 	}
