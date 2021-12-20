@@ -19,6 +19,10 @@ type Vertex struct {
 	adjacent []*Vertex
 }
 
+func NewGraph() *Graph {
+	return &Graph{}
+}
+
 // TODO implement export interface of struct's
 
 // AddVertex add a new Vertex to the Graph

@@ -29,7 +29,7 @@ func main() {
 	}
 
 	// Create graph instance
-	var g *graph.Graph = new(graph.Graph)
+	g := graph.NewGraph()
 
 	// Create Analogizer instance
 	a, _ := analogizer.NewAnalogizer(g, allVertices)

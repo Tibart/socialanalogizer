@@ -16,16 +16,16 @@ type Analogizer struct {
 	grh *graph.Graph
 }
 
-func NewAnalogizer(graph *graph.Graph, vertices []string) (Analogizer, error) {
+func NewAnalogizer(graph *graph.Graph, vertices []string) (*Analogizer, error) {
 	a := &Analogizer{}
 	a.grh = graph
 
 	// Restate all vertices
 	if _, err := a.restate(vertices); err != nil {
-		return Analogizer{}, err
+		return nil, err
 	}
 
-	return *a, nil
+	return a, nil
 }
 
 // Restate adds vertices to the graph and returns the nummer of new vertices
